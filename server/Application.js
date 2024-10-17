@@ -5,6 +5,13 @@ export class Application {
   constructor() {
     this.emmiter = new EventEmitter();
     this.server = this.__createServer();
+    this.middlewares = [];
+  }
+
+  use(middleware) {
+    {
+      this.middlewares.push(middleware);
+    }
   }
 
   listen(port, callback) {
@@ -17,6 +24,7 @@ export class Application {
       Object.keys(endpoint).forEach((method) => {
         const handler = endpoint[method];
         this.emmiter.on(this._getRouteMask(path, method), (req, res) => {
+          this.middlewares.forEach((middleware) => middleware(req, res));
           handler(req, res);
         });
       });
