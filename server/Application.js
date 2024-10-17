@@ -10,12 +10,12 @@ export class Application {
   listen(port, callback) {
     this.server.listen(port, callback);
   }
-  addRouter(rounter) {
-    Object.keys(rounter.endpoints).forEach((path) => {
-      const endpoint = rounter.endpoints[path];
+
+  addRouter(router) {
+    Object.keys(router.endpoints).forEach((path) => {
+      const endpoint = router.endpoints[path];
       Object.keys(endpoint).forEach((method) => {
         const handler = endpoint[method];
-
         this.emmiter.on(this._getRouteMask(path, method), (req, res) => {
           handler(req, res);
         });
