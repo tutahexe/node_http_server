@@ -19,4 +19,16 @@ export class Router {
   get(path, handler) {
     this.request("GET", path, handler);
   }
+
+  post(path, handler) {
+    this.request("POST", path, handler);
+  }
+
+  put(path, handler) {
+    this.request("PUT", path, handler);
+  }
+
+  delete(path, handler) {
+    this.request("DELETE", path, handler);
+  }
 }

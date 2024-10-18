@@ -1,12 +1,17 @@
 import { Router } from "../server/Router.js";
+import { getUsers, createUser } from "../src/user-controller.js";
 
 export const router = new Router();
 
-const users = [{ id: 0, name: "kek" }];
+router.get("/users", getUsers);
 
-router.get("/users", (req, res) => {
-  res.writeHead(200, {
-    "Content-type": "application/json",
-  });
-  res.end(JSON.stringify(users));
+router.post("/users", createUser);
+
+router.put("/users", (req, res) => {});
+
+router.delete("/users", (req, res) => {
+  console.log(req.body);
+  const user = req.body;
+  users.push(user);
+  res.send(user);
 });
