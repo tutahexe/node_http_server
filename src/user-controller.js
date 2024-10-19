@@ -16,7 +16,7 @@ export const getUsers = (req, res) => {
       if (!isUuidValid(uuid)) {
         send400(req, res);
       } else {
-        const user = users.find((user) => user.id == req.params.id);
+        const user = users.find((user) => user.id == uuid);
         if (!user) {
           send404(req, res);
         } else {
@@ -34,7 +34,6 @@ export const getUsers = (req, res) => {
 
 export const createUser = (req, res) => {
   try {
-    console.log("create user is called");
     const { username, age, hobbies } = req.body;
 
     if (!username || !age || !Array.isArray(hobbies)) {
