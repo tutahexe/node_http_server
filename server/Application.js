@@ -4,14 +4,12 @@ import { EventEmitter } from "node:events";
 export class Application {
   constructor() {
     this.emitter = new EventEmitter();
-    this.server = this.__createServer();
+    this.server = this._createServer();
     this.middlewares = [];
   }
 
   use(middleware) {
-    {
-      this.middlewares.push(middleware);
-    }
+    this.middlewares.push(middleware);
   }
 
   listen(port, callback) {
@@ -22,45 +20,38 @@ export class Application {
     Object.keys(router.endpoints).forEach((path) => {
       const endpoint = router.endpoints[path];
       Object.keys(endpoint).forEach((method) => {
-        const handler = endpoint[method];
         this.emitter.on(this._getRouteMask(path, method), (req, res) => {
+          const handler = endpoint[method];
           handler(req, res);
         });
       });
     });
   }
 
-  __createServer() {
+  _createServer() {
     return http.createServer((req, res) => {
       let body = "";
 
-      console.log("Incoming request:", req.url);
       req.on("data", (chunk) => {
         body += chunk;
       });
 
       req.on("end", () => {
         if (body) {
-          try {
-            req.body = JSON.parse(body);
-          } catch (error) {
-            console.error("Invalid JSON:", error);
-            if (!res.headersSent) {
-              res.writeHead(400, { "Content-Type": "application/json" });
-              return res.end(JSON.stringify({ error: "Invalid JSON body" }));
-            }
-          }
+          req.body = JSON.parse(body);
         }
-
         this.middlewares.forEach((middleware) => middleware(req, res));
+
         const emitted = this.emitter.emit(
           this._getRouteMask(req.pathname, req.method),
           req,
           res
         );
-        console.log("Route emitted:", emitted);
         if (!emitted) {
-          res.end(JSON.stringify({ error: "404 Not Found" }));
+          res.writeHead(404, {
+            "Content-type": "application/json",
+          });
+          res.end(JSON.stringify({ message: "Requested page was not found" }));
         }
       });
     });
